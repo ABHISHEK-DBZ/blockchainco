@@ -1,0 +1,205 @@
+.blockchain-project {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  animation: slideInUp 0.8s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.blockchain-project h2 {
+  text-align: center;
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 30px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.not-connected {
+  text-align: center;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+}
+
+.not-connected h3 {
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 10px;
+}
+
+.not-connected p {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.project-section, .mint-section {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  margin-bottom: 25px;
+  border-left: 4px solid var(--accent-primary);
+  transition: all 0.3s ease;
+}
+
+.project-section:hover, .mint-section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+  border-left-color: var(--accent-secondary);
+}
+
+.mint-section {
+  border-left-color: var(--accent-secondary);
+}
+
+.mint-section:hover {
+  border-left-color: var(--accent-primary);
+}
+
+.project-section h3, .mint-section h3 {
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.project-form, .mint-form {
+  display: grid;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #4a5568;
+  margin-bottom: 5px;
+}
+
+.form-group input, .form-group textarea {
+  padding: 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus, .form-group textarea:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #48bb78, #38a169);
+  color: white;
+  border: none;
+  padding: 15px 25px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.mint-btn {
+  background: linear-gradient(135deg, #ed8936, #dd6b20);
+}
+
+.mint-btn:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(237, 137, 54, 0.3);
+}
+
+.info-section {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  padding: 30px;
+  border-radius: 12px;
+  color: white;
+  margin-top: 30px;
+}
+
+.info-section h3 {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 22px;
+}
+
+.info-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.info-card {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.info-card h4 {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.info-card p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .blockchain-project {
+    padding: 15px;
+  }
+  
+  .project-section, .mint-section {
+    padding: 20px;
+  }
+  
+  .info-cards {
+    grid-template-columns: 1fr;
+  }
+}
