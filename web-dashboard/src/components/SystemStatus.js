@@ -262,7 +262,7 @@ const SystemStatus = () => {
         <div className="network-grid">
           <div className="network-item">
             <span className="network-label">Frontend URL:</span>
-            <span className="network-value">http://localhost:3000</span>
+            <span className="network-value">http://localhost:3001</span>
           </div>
           <div className="network-item">
             <span className="network-label">Backend URL:</span>

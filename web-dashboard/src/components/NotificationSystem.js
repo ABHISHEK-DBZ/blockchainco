@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useContext } from 'react';
+import React, { useState, useEffect, useCallback, createContext, useContext } from 'react';
 import './NotificationSystem.css';
 
 // Notification Context
@@ -16,7 +16,7 @@ export const useNotification = () => {
 export const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
 
-  const addNotification = (message, type = 'info', duration = 5000) => {
+  const addNotification = useCallback((message, type = 'info', duration = 5000) => {
     const id = Date.now() + Math.random();
     const notification = { id, message, type, duration };
     
@@ -24,19 +24,19 @@ export const NotificationProvider = ({ children }) => {
     
     if (duration > 0) {
       setTimeout(() => {
-        removeNotification(id);
+        setNotifications(prev => prev.filter(notif => notif.id !== id));
       }, duration);
     }
-  };
+  }, []);
 
-  const removeNotification = (id) => {
+  const removeNotification = useCallback((id) => {
     setNotifications(prev => prev.filter(notif => notif.id !== id));
-  };
+  }, []);
 
-  const showSuccess = (message, duration) => addNotification(message, 'success', duration);
-  const showError = (message, duration) => addNotification(message, 'error', duration);
-  const showWarning = (message, duration) => addNotification(message, 'warning', duration);
-  const showInfo = (message, duration) => addNotification(message, 'info', duration);
+  const showSuccess = useCallback((message, duration) => addNotification(message, 'success', duration), [addNotification]);
+  const showError = useCallback((message, duration) => addNotification(message, 'error', duration), [addNotification]);
+  const showWarning = useCallback((message, duration) => addNotification(message, 'warning', duration), [addNotification]);
+  const showInfo = useCallback((message, duration) => addNotification(message, 'info', duration), [addNotification]);
 
   return (
     <NotificationContext.Provider value={{
@@ -75,20 +75,20 @@ const NotificationContainer = () => {
 const NotificationItem = ({ notification, onClose }) => {
   const [isClosing, setIsClosing] = useState(false);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setIsClosing(true);
     setTimeout(onClose, 300);
-  };
+  }, [onClose]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (notification.duration > 0) {
+    if (notification.duration > 0) {
+      const timer = setTimeout(() => {
         handleClose();
-      }
-    }, notification.duration - 300);
+      }, notification.duration - 300);
 
-    return () => clearTimeout(timer);
-  }, [notification.duration]);
+      return () => clearTimeout(timer);
+    }
+  }, [notification.duration, handleClose]);
 
   const getIcon = () => {
     switch (notification.type) {

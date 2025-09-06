@@ -5,8 +5,8 @@ import './App.css';
 // Component imports
 import Login from './components/Login';
 import Register from './components/Register';
-import ProjectManager from './components/ProjectManager';
-import FieldDataManager from './components/FieldDataManager';
+import ProjectList from './components/ProjectList';
+import FieldDataUpload from './components/FieldDataUpload';
 import CarbonCreditsManager from './components/CarbonCreditsManager';
 import DashboardSummary from './components/DashboardSummary';
 import MapWrapper from './components/MapWrapper';
@@ -23,9 +23,9 @@ import SystemStatus from './components/SystemStatus';
 import LiveTelemetry from './components/LiveTelemetry';
 
 // Context providers
+import { NotificationProvider, useNotification } from './contexts/NotificationContext';
 import { Web3Provider } from './contexts/Web3Context';
-import { RealTimeProvider } from './contexts/RealTimeContext';
-import { NotificationProvider } from './components/NotificationSystem';
+import { RealTimeProvider } from './contexts/RealTimeProvider';
 
 function AppContent() {
   const [token, setToken] = useState(() => localStorage.getItem('token'));
@@ -35,16 +35,18 @@ function AppContent() {
   const [activeBlockchainTab, setActiveBlockchainTab] = useState('summary');
   const [showRegister, setShowRegister] = useState(false);
   const [systemHealth, setSystemHealth] = useState('healthy');
+  
+  const { showInfo, showSuccess, showError } = useNotification();
 
   const handleSetToken = (newToken) => {
     if (newToken) {
       localStorage.setItem('token', newToken);
       setToken(newToken);
-      console.log('Successfully logged in!');
+      showSuccess('Successfully logged in!');
     } else {
       localStorage.removeItem('token');
       setToken(null);
-      console.log('Logged out successfully');
+      showInfo('Logged out successfully');
     }
   };
 
@@ -69,7 +71,7 @@ function AppContent() {
     if (token) {
       fetchProjects();
     }
-  }, [token]);
+  }, [token, showInfo, showSuccess, showError]);
 
   if (!token) {
     return (
@@ -87,43 +89,29 @@ function AppContent() {
   }
 
   let user = null;
+  let isAdmin = false;
   
   if (token) {
     try {
-      // Try to decode as JWT token first
+      // Try to decode as JWT token
       user = jwtDecode(token);
-      console.log('JWT token decoded successfully');
+      isAdmin = user && user.role === 'admin';
     } catch (error) {
       // If token is not a valid JWT, handle demo token format
       console.log('Token is not a valid JWT, using demo authentication');
-      
-      // Check for demo token format
-      if (typeof token === 'string') {
-        const tokenParts = token.split('_');
-        if (tokenParts.length >= 2 && tokenParts[0] === 'demo' && tokenParts[1] === 'token') {
-          const username = tokenParts[2] || 'user';
-          user = {
-            username: username,
-            role: username === 'admin' ? 'admin' : 'user',
-            email: `${username}@demo.com`
-          };
-          console.log('Demo token validated for user:', username);
-        } else {
-          // Try to treat as simple username token
-          user = {
-            username: token,
-            role: 'user',
-            email: `${token}@demo.com`
-          };
-          console.log('Simple token validated for user:', token);
-        }
-      }
-      
-      // If we still don't have a valid user, clear the token
-      if (!user) {
-        console.warn('Invalid token format, clearing token');
+      const tokenParts = token.split('_');
+      if (tokenParts.length >= 2 && tokenParts[0] === 'demo' && tokenParts[1] === 'token') {
+        const username = tokenParts[2];
+        user = {
+          username: username,
+          role: username === 'admin' ? 'admin' : 'user'
+        };
+        isAdmin = user.role === 'admin';
+      } else {
+        // Invalid token format, clear it
         handleSetToken(null);
-        return null;
+        user = null;
+        isAdmin = false;
       }
     }
   }
@@ -207,11 +195,11 @@ function AppContent() {
               
               <div className="management-tab-content">
                 {activeManagementTab === 'projects' ? (
-                  <ProjectManager projects={projects} onProjectsUpdate={setProjects} token={token} />
+                  <ProjectList projects={projects} onProjectsUpdate={setProjects} token={token} />
                 ) : activeManagementTab === 'credits' ? (
                   <CarbonCreditsManager token={token} />
                 ) : activeManagementTab === 'fielddata' ? (
-                  <FieldDataManager token={token} />
+                  <FieldDataUpload token={token} />
                 ) : (
                   <DashboardSummary projects={projects} chartData={chartData} />
                 )}
@@ -233,12 +221,12 @@ function AppContent() {
               
               <div className="dashboard-card">
                 <h3>Recent Projects</h3>
-                <ProjectManager projects={projects} onProjectsUpdate={setProjects} token={token} />
+                <ProjectList projects={projects} onProjectsUpdate={setProjects} token={token} />
               </div>
               
               <div className="dashboard-card">
                 <h3>Field Data</h3>
-                <FieldDataManager token={token} />
+                <FieldDataUpload token={token} />
               </div>
               
               <div className="dashboard-card">
@@ -338,13 +326,13 @@ function AppContent() {
 
 function App() {
   return (
-    <Web3Provider>
-      <RealTimeProvider>
-        <NotificationProvider>
+    <NotificationProvider>
+      <Web3Provider>
+        <RealTimeProvider>
           <AppContent />
-        </NotificationProvider>
-      </RealTimeProvider>
-    </Web3Provider>
+        </RealTimeProvider>
+      </Web3Provider>
+    </NotificationProvider>
   );
 }
 

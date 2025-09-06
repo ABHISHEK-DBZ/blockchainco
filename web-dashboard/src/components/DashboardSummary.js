@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useNotification } from './NotificationSystem';
+import React, { useState, useEffect, useCallback } from 'react';
 import './DashboardSummary.css';
 
-const DashboardSummary = () => {
+const DashboardSummary = ({ projects, chartData }) => {
   const [summary, setSummary] = useState({
     totalProjects: 0,
     totalCredits: 0,
@@ -18,15 +17,8 @@ const DashboardSummary = () => {
     backendConnected: false
   });
   const [loading, setLoading] = useState(true);
-  const { showError } = useNotification();
 
-  useEffect(() => {
-    fetchDashboardSummary();
-    const interval = setInterval(fetchDashboardSummary, 30000); // Update every 30 seconds
-    return () => clearInterval(interval);
-  }, []);
-
-  const fetchDashboardSummary = async () => {
+  const fetchDashboardSummary = useCallback(async () => {
     try {
       // Check backend connectivity
       const healthResponse = await fetch('http://localhost:5000/health');
@@ -87,12 +79,17 @@ const DashboardSummary = () => {
       setSummary(mockSummary);
     } catch (error) {
       console.error('Error fetching dashboard summary:', error);
-      showError('Failed to load dashboard summary');
       setSummary(prev => ({ ...prev, backendConnected: false }));
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchDashboardSummary();
+    const interval = setInterval(fetchDashboardSummary, 30000); // Update every 30 seconds
+    return () => clearInterval(interval);
+  }, [fetchDashboardSummary]);
 
   const formatNumber = (num) => {
     if (num >= 1000000) {

@@ -43,6 +43,7 @@
   margin: 0;
   font-size: 2.5rem;
   font-weight: 700;
+  color: #ffffff; /* Fallback color */
   background: var(--gradient-text);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -172,12 +173,14 @@
 .metric-icon {
   font-size: 2rem;
   opacity: 0.8;
+  color: #ffffff; /* Ensure icon visibility */
 }
 
 .metric-content h3 {
   margin: 0 0 5px 0;
   font-size: 1.75rem;
   font-weight: 700;
+  color: #ffffff; /* Fallback color */
   background: var(--gradient-accent);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -186,6 +189,7 @@
 
 .metric-content p {
   margin: 0;
+  color: rgba(255, 255, 255, 0.9); /* Ensure visibility */
   opacity: 0.8;
   font-size: 0.875rem;
 }
@@ -223,6 +227,7 @@
   margin: 0 0 20px 0;
   font-size: 1.25rem;
   font-weight: 600;
+  color: #ffffff; /* Fallback for text visibility */
 }
 
 .activity-list {
@@ -246,12 +251,14 @@
 .activity-icon {
   font-size: 1.5rem;
   margin-top: 2px;
+  color: #ffffff; /* Fallback for icon visibility */
 }
 
 .activity-content h4 {
   margin: 0 0 5px 0;
   font-size: 0.875rem;
   font-weight: 600;
+  color: #ffffff; /* Fallback for text visibility */
 }
 
 .activity-content p {
@@ -259,12 +266,14 @@
   font-size: 0.75rem;
   opacity: 0.8;
   line-height: 1.4;
+  color: rgba(255, 255, 255, 0.8); /* Fallback for text visibility */
 }
 
 .activity-time {
   font-size: 0.7rem;
   opacity: 0.6;
   font-style: italic;
+  color: rgba(255, 255, 255, 0.6); /* Fallback for text visibility */
 }
 
 .action-grid {
@@ -336,6 +345,7 @@
   font-size: 1.5rem;
   font-weight: 600;
   text-align: center;
+  color: #ffffff; /* Fallback for text visibility */
 }
 
 .impact-stats {
@@ -355,6 +365,7 @@
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 8px;
+  color: #ffffff; /* Fallback color */
   background: var(--gradient-accent);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -365,11 +376,13 @@
   font-size: 1rem;
   font-weight: 600;
   margin-bottom: 5px;
+  color: rgba(255, 255, 255, 0.9); /* Ensure visibility */
   opacity: 0.9;
 }
 
 .impact-equivalent {
   font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7); /* Ensure visibility */
   opacity: 0.7;
   font-style: italic;
 }
