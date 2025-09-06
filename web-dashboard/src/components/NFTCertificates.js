@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useWeb3 } from '../contexts/Web3Context';
 import './NFTCertificates.css';
 
@@ -15,13 +15,7 @@ const NFTCertificates = () => {
     imageUrl: ''
   });
 
-  useEffect(() => {
-    if (isConnected && account) {
-      loadCertificates();
-    }
-  }, [isConnected, account]);
-
-  const loadCertificates = async () => {
+  const loadCertificates = useCallback(async () => {
     setLoading(true);
     try {
       // Mock NFT certificates data
@@ -104,7 +98,13 @@ const NFTCertificates = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [account]);
+
+  useEffect(() => {
+    if (isConnected && account) {
+      loadCertificates();
+    }
+  }, [isConnected, account, loadCertificates]);
 
   const handleMintCertificate = async (e) => {
     e.preventDefault();

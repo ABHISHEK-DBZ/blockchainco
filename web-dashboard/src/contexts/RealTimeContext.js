@@ -22,50 +22,6 @@ export const RealTimeProvider = ({ children }) => {
   });
   const [connectionStatus, setConnectionStatus] = useState('disconnected');
 
-  // WebSocket connection for real-time updates
-  const connectWebSocket = useCallback(() => {
-    try {
-      const ws = new WebSocket('ws://localhost:5000/ws');
-      
-      ws.onopen = () => {
-        console.log('🟢 WebSocket connected');
-        setIsConnected(true);
-        setConnectionStatus('connected');
-        setLastUpdate(new Date());
-      };
-
-      ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          handleRealtimeUpdate(data);
-          setLastUpdate(new Date());
-        } catch (error) {
-          console.error('❌ Error parsing WebSocket message:', error);
-        }
-      };
-
-      ws.onclose = () => {
-        console.log('🔴 WebSocket disconnected; falling back to SSE');
-        setIsConnected(false);
-        setConnectionStatus('disconnected');
-        connectSSE();
-      };
-
-      ws.onerror = (error) => {
-        console.error('❌ WebSocket error:', error);
-        setConnectionStatus('error');
-        try { ws.close(); } catch {}
-        connectSSE();
-      };
-
-      return ws;
-    } catch (error) {
-      console.error('❌ Failed to create WebSocket connection:', error);
-      setConnectionStatus('error');
-      return null;
-    }
-  }, []);
-
   // Handle real-time data updates
   const handleRealtimeUpdate = useCallback((data) => {
     setRealtimeData(prev => {
@@ -149,6 +105,50 @@ export const RealTimeProvider = ({ children }) => {
       return null;
     }
   }, [handleRealtimeUpdate]);
+
+  // WebSocket connection for real-time updates
+  const connectWebSocket = useCallback(() => {
+    try {
+      const ws = new WebSocket('ws://localhost:5000/ws');
+      
+      ws.onopen = () => {
+        console.log('🟢 WebSocket connected');
+        setIsConnected(true);
+        setConnectionStatus('connected');
+        setLastUpdate(new Date());
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          handleRealtimeUpdate(data);
+          setLastUpdate(new Date());
+        } catch (error) {
+          console.error('❌ Error parsing WebSocket message:', error);
+        }
+      };
+
+      ws.onclose = () => {
+        console.log('🔴 WebSocket disconnected; falling back to SSE');
+        setIsConnected(false);
+        setConnectionStatus('disconnected');
+        connectSSE();
+      };
+
+      ws.onerror = (error) => {
+        console.error('❌ WebSocket error:', error);
+        setConnectionStatus('error');
+        try { ws.close(); } catch {}
+        connectSSE();
+      };
+
+      return ws;
+    } catch (error) {
+      console.error('❌ Failed to create WebSocket connection:', error);
+      setConnectionStatus('error');
+      return null;
+    }
+  }, [handleRealtimeUpdate, connectSSE]);
 
   // Polling fallback
   const startPolling = useCallback(() => {

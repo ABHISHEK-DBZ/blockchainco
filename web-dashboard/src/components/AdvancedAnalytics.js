@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
 import { useNotification } from './NotificationSystem';
 import './AdvancedAnalytics.css';
@@ -15,11 +15,7 @@ const AdvancedAnalytics = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const { showSuccess, showError } = useNotification();
 
-  useEffect(() => {
-    fetchAnalyticsData();
-  }, []);
-
-  const fetchAnalyticsData = async () => {
+  const fetchAnalyticsData = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -81,7 +77,11 @@ const AdvancedAnalytics = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showSuccess, showError]);
+
+  useEffect(() => {
+    fetchAnalyticsData();
+  }, [fetchAnalyticsData]);
 
   const exportData = () => {
     try {

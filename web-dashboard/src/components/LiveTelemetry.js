@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import MapWrapper from './MapWrapper';
+import './LiveTelemetry.css';
 
 const LiveTelemetry = () => {
   const [gps, setGps] = useState([]); // {device_id, project_id, lat, lon, ts}
   const [photos, setPhotos] = useState([]); // {device_id, project_id, lat, lon, photo_ipfs, ts}
+  const [connected, setConnected] = useState(false);
 
   useEffect(() => {
     const es = new EventSource('http://localhost:5000/sse');
+    
+    es.onopen = () => {
+      setConnected(true);
+    };
+    
     es.onmessage = (e) => {
       try {
         const evt = JSON.parse(e.data);
@@ -17,8 +24,16 @@ const LiveTelemetry = () => {
         }
       } catch {}
     };
-    es.onerror = () => { try { es.close(); } catch {} };
-    return () => { try { es.close(); } catch {} };
+    
+    es.onerror = () => { 
+      setConnected(false);
+      try { es.close(); } catch {} 
+    };
+    
+    return () => { 
+      setConnected(false);
+      try { es.close(); } catch {} 
+    };
   }, []);
 
   const last = gps.find(g => g.lat && g.lon);
@@ -30,35 +45,81 @@ const LiveTelemetry = () => {
   }));
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-      <div>
-        <h3>Live GPS</h3>
-        <MapWrapper 
-          center={center} 
-          zoom={6} 
-          markers={gpsMarkers}
-          style={{ height: '400px', width: '100%' }}
-        />
+    <div className="live-telemetry">
+      <h2>📡 Live Telemetry Dashboard</h2>
+      
+      {/* Connection Status */}
+      <div className="telemetry-status">
+        <div className="status-indicator"></div>
+        <span>{connected ? 'Connected to Live Stream' : 'Connecting to Live Stream...'}</span>
       </div>
-      <div>
-        <h3>Live Photos</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12 }}>
-          {photos.map((p, idx) => (
-            <a key={idx} href={`https://ipfs.io/ipfs/${p.photo_ipfs}`} target="_blank" rel="noreferrer" style={{ textDecoration: 'none', color: '#333' }}>
-              <div style={{ border: '1px solid #ddd', borderRadius: 8, overflow: 'hidden' }}>
-                {p.photo_ipfs ? (
-                  <img alt="drone" src={`https://ipfs.io/ipfs/${p.photo_ipfs}`} style={{ width: '100%', height: 120, objectFit: 'cover' }} />
-                ) : (
-                  <div style={{ height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666' }}>No image</div>
-                )}
-                <div style={{ padding: 8, fontSize: 12 }}>
-                  <div><strong>Device:</strong> {p.device_id || 'n/a'}</div>
-                  <div><strong>Project:</strong> {p.project_id || 'n/a'}</div>
-                  <div><strong>Time:</strong> {p.ts}</div>
-                </div>
-              </div>
-            </a>
-          ))}
+
+      {/* Statistics */}
+      <div className="gps-stats">
+        <div className="stat-card">
+          <div className="stat-number">{gps.length}</div>
+          <div className="stat-label">GPS Points</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-number">{photos.length}</div>
+          <div className="stat-label">Photos</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-number">{new Set(gps.map(g => g.device_id)).size}</div>
+          <div className="stat-label">Active Devices</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-number">{new Set(gps.map(g => g.project_id)).size}</div>
+          <div className="stat-label">Projects</div>
+        </div>
+      </div>
+
+      {/* Main Content Grid */}
+      <div className="telemetry-grid">
+        <div className="telemetry-section gps-section">
+          <h3>🗺️ Live GPS Tracking</h3>
+          <div className="map-container">
+            <MapWrapper 
+              center={center} 
+              zoom={6} 
+              markers={gpsMarkers}
+              style={{ height: '400px', width: '100%' }}
+            />
+          </div>
+        </div>
+        
+        <div className="telemetry-section photos-section">
+          <h3>📸 Live Photo Stream</h3>
+          {photos.length === 0 ? (
+            <div className="no-data">No photos received yet...</div>
+          ) : (
+            <div className="photos-grid">
+              {photos.map((p, idx) => (
+                <a 
+                  key={idx} 
+                  href={`https://ipfs.io/ipfs/${p.photo_ipfs}`} 
+                  target="_blank" 
+                  rel="noreferrer" 
+                  className="photo-card"
+                >
+                  {p.photo_ipfs ? (
+                    <img 
+                      alt="drone capture" 
+                      src={`https://ipfs.io/ipfs/${p.photo_ipfs}`} 
+                      className="photo-image"
+                    />
+                  ) : (
+                    <div className="photo-placeholder">📷 No image</div>
+                  )}
+                  <div className="photo-info">
+                    <div><strong>Device:</strong> {p.device_id || 'n/a'}</div>
+                    <div><strong>Project:</strong> {p.project_id || 'n/a'}</div>
+                    <div><strong>Time:</strong> {p.ts}</div>
+                  </div>
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

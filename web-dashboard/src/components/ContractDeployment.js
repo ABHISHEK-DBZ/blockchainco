@@ -11,7 +11,7 @@ const ContractDeployment = () => {
     transactions: []
   });
   
-  const [networkConfig, setNetworkConfig] = useState({
+  const [networkConfig] = useState({
     chainId: 80001, // Mumbai testnet
     rpcUrl: 'https://rpc-mumbai.maticvigil.com',
     name: 'Mumbai Testnet'

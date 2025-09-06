@@ -8,7 +8,7 @@ import os
 project_root = os.path.dirname(os.path.dirname(__file__))
 sys.path.append(project_root)
 
-from app.main import app, db
+from app.main_minimal import app, db
 from models.database_models import User, RestorationProject, FieldData, CarbonCredit, VerificationReport, ParticipantType, ProjectStatus, EcosystemType
 
 def init_database():

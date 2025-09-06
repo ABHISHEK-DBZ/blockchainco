@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useWeb3 } from '../contexts/Web3Context';
 import './SystemStatus.css';
 
@@ -18,6 +18,30 @@ const SystemStatus = () => {
     systemUptime: '0:00:00'
   });
 
+  const checkBlockchainHealth = useCallback(() => {
+    if (isConnected && account) {
+      if (contracts && Object.keys(contracts).length > 0) {
+        setSystemHealth(prev => ({
+          ...prev,
+          blockchain: { status: 'healthy', message: `Connected to ${account.slice(0, 6)}...${account.slice(-4)}` },
+          smartContracts: { status: 'healthy', message: 'Smart contracts loaded' }
+        }));
+      } else {
+        setSystemHealth(prev => ({
+          ...prev,
+          blockchain: { status: 'healthy', message: `Connected to ${account.slice(0, 6)}...${account.slice(-4)}` },
+          smartContracts: { status: 'warning', message: 'Contracts not deployed' }
+        }));
+      }
+    } else {
+      setSystemHealth(prev => ({
+        ...prev,
+        blockchain: { status: 'warning', message: 'Wallet not connected' },
+        smartContracts: { status: 'warning', message: 'Wallet not connected' }
+      }));
+    }
+  }, [isConnected, account, contracts]);
+
   useEffect(() => {
     checkSystemHealth();
     const interval = setInterval(checkSystemHealth, 30000); // Check every 30 seconds
@@ -27,7 +51,7 @@ const SystemStatus = () => {
 
   useEffect(() => {
     checkBlockchainHealth();
-  }, [isConnected, account, contracts]);
+  }, [isConnected, account, contracts, checkBlockchainHealth]);
 
   const checkSystemHealth = async () => {
     // Check Backend Health
@@ -86,30 +110,6 @@ const SystemStatus = () => {
       totalCredits: 15420,
       totalUsers: 42
     }));
-  };
-
-  const checkBlockchainHealth = () => {
-    if (isConnected && account) {
-      if (contracts && Object.keys(contracts).length > 0) {
-        setSystemHealth(prev => ({
-          ...prev,
-          blockchain: { status: 'healthy', message: `Connected to ${account.slice(0, 6)}...${account.slice(-4)}` },
-          smartContracts: { status: 'healthy', message: 'Smart contracts loaded' }
-        }));
-      } else {
-        setSystemHealth(prev => ({
-          ...prev,
-          blockchain: { status: 'healthy', message: `Connected to ${account.slice(0, 6)}...${account.slice(-4)}` },
-          smartContracts: { status: 'warning', message: 'Contracts not deployed' }
-        }));
-      }
-    } else {
-      setSystemHealth(prev => ({
-        ...prev,
-        blockchain: { status: 'warning', message: 'Wallet not connected' },
-        smartContracts: { status: 'warning', message: 'Wallet not connected' }
-      }));
-    }
   };
 
   const getStatusIcon = (status) => {
